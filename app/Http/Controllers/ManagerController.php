@@ -14,7 +14,7 @@ class ManagerController extends Controller
         if(Auth::user()->usertype=='user'){
             return view('dashboard');
         } else {
-            return view('manager.home');
+            return view('manager.index');
         }
     }
 }
