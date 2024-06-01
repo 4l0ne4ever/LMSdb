@@ -9,7 +9,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
 
-    <title>Liberty NFT Marketplace - HTML CSS Template</title>
+    <title>Library Books - Explore Listing Page</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -58,8 +58,8 @@ https://templatemo.com/tm-577-liberty-market
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                        <li><a href="index.html" class="active">Home</a></li>
-                        <li><a href="explore.html">Explore</a></li>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="explore.html" class="active">Explore</a></li>
                         <li><a href="details.html">Item Details</a></li>
                         <li><a href="author.html">Author</a></li>
                         <li><a href="create.html">Create Yours</a></li>
@@ -75,117 +75,56 @@ https://templatemo.com/tm-577-liberty-market
   </header>
   <!-- ***** Header Area End ***** -->
 
-  <!-- ***** Main Banner Area Start ***** -->
-  <div class="main-banner">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-6 align-self-center">
-          <div class="header-text">
-            <h6>Book is Knowledge</h6>
-            <h2>Knowledge is Power</h2>
-            <p>Library is a really cool and professional design for your websites. This HTML CSS template is based on Bootstrap v5 and it is designed for related web portals. Liberty can be freely downloaded from github</p>
-            <div class="buttons">
-              <div class="border-button">
-                <a href="explore.html">Explore Top Books</a>
-              </div>
-              <div class="main-button">
-                <a href="" target="_blank">Watch Our Videos</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-5 offset-lg-1">
-          <div class="">
-            <div class="item">
-              <img src="assets/images/banner.png" alt="">
-            </div>
-            <div class="item">
-              <img src="assets/images/banner2.png" alt="">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- ***** Main Banner Area End ***** -->
   
-  <div class="categories-collections">
+
+  <div class="discover-items">
     <div class="container">
       <div class="row">
-        <div class="col-lg-12">
-          <div class="categories">
+        <div class="col-lg-5">
+          <div class="section-heading">
+             
+            <h2>Discover Some Of Our <em>Items</em>.</h2>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <form id="search-form" name="gs" method="submit" role="search" action="#">
             <div class="row">
-              <div class="col-lg-12">
-                <div class="section-heading">
-                  <div class="line-dec"></div>
-                  <h2>Browse Through Book <em>Categories</em> Here.</h2>
-                </div>
+              <div class="col-lg-4">
+                <fieldset>
+                    <input type="text" name="keyword" class="searchText" placeholder="Type Something..." autocomplete="on" required>
+                </fieldset>
               </div>
-              <div class="col-lg-2 col-sm-6">
-                <div class="item">
-                  <div class="icon">
-                    <img src="assets/images/icon-01.png" alt="">
-                  </div>
-                  <h4>Motivational</h4>
-                  
-                </div>
+              <div class="col-lg-3">
+                <fieldset>
+                    <select name="Category" class="form-select" aria-label="Default select example" id="chooseCategory" onchange="this.form.click()">
+                        <option selected>All Categories</option>
+                        <option type="checkbox" name="option1" value="Music">Music</option>
+                        <option value="Digital">Digital</option>
+                        <option value="Blockchain">Blockchain</option>
+                        <option value="Virtual">Virtual</option>
+                    </select>
+                </fieldset>
               </div>
-              <div class="col-lg-2 col-sm-6">
-                <div class="item">
-                  <div class="icon">
-                    <img src="assets/images/icon-02.png" alt="">
-                  </div>
-                  <h4>Money</h4>
-                  
-                </div>
+              <div class="col-lg-3">
+                <fieldset>
+                    <select name="Price" class="form-select" aria-label="Default select example" id="chooseCategory" onchange="this.form.click()">
+                        <option selected>Available</option>
+                        <option value="Ending-Soon">Ending Soon</option>
+                        <option value="Coming-Soon">Coming Soon</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </fieldset>
               </div>
-              <div class="col-lg-2 col-sm-6">
-                <div class="item">
-                  <div class="icon">
-                    <img src="assets/images/icon-03.png" alt="">
-                  </div>
-                  <h4>Psychological</h4>
-                  
-                </div>
-              </div>
-              <div class="col-lg-2 col-sm-6">
-                <div class="item">
-                  <div class="icon">
-                    <img src="assets/images/icon-04.png" alt="">
-                  </div>
-                  <h4>Story</h4>
-                  
-                </div>
-              </div>
-              <div class="col-lg-2 col-sm-6">
-                <div class="item">
-                  <div class="icon">
-                    <img src="assets/images/icon-05.png" alt="">
-                  </div>
-                  <h4>Fictional</h4>
-                  
-                </div>
-              </div>
-              <div class="col-lg-2 col-sm-6">
-                <div class="item">
-                  <div class="icon">
-                    <img src="assets/images/icon-06.png" alt="">
-                  </div>
-                  <h4>Romance</h4>
-                  
-                </div>
+              <div class="col-lg-2">                        
+                <fieldset>
+                    <button class="main-button">Search</button>
+                </fieldset>
               </div>
             </div>
-          </div>
+          </form>
         </div>
         
-      </div>
-    </div>
-  </div>
-
-  
-
-  <div class="currently-market">
+       <div class="currently-market">
     <div class="container">
       <div class="row">
         <div class="col-lg-6">
@@ -317,6 +256,12 @@ https://templatemo.com/tm-577-liberty-market
       </div>
     </div>
   </div>
+  
+  
+        
+      </div>
+    </div>
+  </div>
 
   <footer>
     <div class="container">
@@ -329,7 +274,6 @@ https://templatemo.com/tm-577-liberty-market
       </div>
     </div>
   </footer>
-
 
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->

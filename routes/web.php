@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+ 
+use App\Http\Controllers\ManagerController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\HomeController;
+
+route::get('/',[HomeController::class,'index']);
 
 Route::middleware([
     'auth:sanctum',
@@ -15,3 +17,5 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+route::get('/home',[ManagerController::class,'index']);
