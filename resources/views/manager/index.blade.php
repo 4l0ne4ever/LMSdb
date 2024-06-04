@@ -30,5 +30,7 @@
                                 <input type="submit" value="logout">
                             </form>
     </x-app-layout>
+
+<a href="{{ route('manager.books.pending') }}" class="btn btn-primary">See Requests</a>
 </body>
 </html>

@@ -14,9 +14,9 @@
             <div class="line-dec"></div>
             <h2>Apply For <em>Your Book</em> Here.</h2>
           </div>
-        </div>
+        </div> 
         <div class="col-lg-12">
-          <form id="contact" method="Post" action="{{ route('books.donate') }}">
+          <form id="contact" method="Post" action="{{ route('donate') }}">
             @csrf
             <div class="row">
               <div class="col-lg-4">
@@ -45,8 +45,8 @@
               </div>
               <div class="col-lg-4">
                 <fieldset>
-                  <label for="picture">Picture</label>
-                  <input type="url" id="picture" name="picture" multiple />
+                  <label for="image_link">Picture</label>
+                  <input type="text" id="image_link" name="image_link" multiple />
                 </fieldset>
               </div>
               <div class="col-lg-8">
@@ -55,7 +55,7 @@
                 </fieldset>
               </div>
             </div>
-          </form>
+          </form> 
         </div>
         
         </div>

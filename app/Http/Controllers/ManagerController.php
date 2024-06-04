@@ -18,31 +18,27 @@ class ManagerController extends Controller
             return view('manager.index');
         }
     }
-
     public function pending(){
-        $pending = Book::all();
-        return view('manager.pending',compact('pending'));
+        // Get all books with status 'pending'
+        $books = Book::where('status', 'pending')->get();
+
+        return view('manager.pending', ['books' => $books]);
     }
 
-    public function approve(Request $request, $id){
-        $book = Book::findOrFail($id);
-        if($request->action == 'approve'){
-            $sqlFilePath = storage_path('sql/add.sql');
-            $sqp = File::get($sqlFilePath);
-            $bindings = [
-                $book->title,
-                $book->author,
-                $book->category,
-                $book->quantity,
-                $book->image_link,
-                now(),
-                now()
-            ];
-            $sql = vsprintf($sql, $bindings);
-            
-            \DB::unprepared($sql);
+    public function handleRequest(Request $request, $id, $action){
+        // Get the book from the database
+        $book = Book::find($id);
+
+        // Handle the request
+        if ($action == 'approve') {
+            $book->status = 'ok';
+            $book->save();
+        } else if ($action == 'reject') {
+            // Delete the book immediately
+            $book->delete();
         }
-        $book->delete();
-        return redirect()->back()->with('success','Book approval processed successfully.');
+
+        return redirect()->route('manager.books.pending');
     }
 }
+    

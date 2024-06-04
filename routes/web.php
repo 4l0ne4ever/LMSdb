@@ -20,9 +20,8 @@ Route::middleware([
     })->name('dashboard');
 });
 
-route::get('/home',[ManagerController::class,'index']);
-// Add and accept book
-route::get('/donate',[HomeController::class, 'donate']);
-route::post('/donate',[BookController::class,'donate'])->name('books.donate');
-Route::post('/pending', 'ManagerBooksController@approve')->name('manager.books.approve');
-Route::post('/home', [ManagerController::class, 'pending'])->name('manager.books.pending');
+route::get('/home',[ManagerController::class,'index'])->name('home');
+Route::get('/donate', [BookController::class, 'donateForm'])->name('donate.form')->middleware('auth');
+Route::post('/donate', [BookController::class, 'donate'])->name('donate')->middleware('auth');
+Route::get('/pending', [ManagerController::class, 'pending'])->name('manager.books.pending')->middleware('auth');
+Route::post('/pending/{id}/{action}', [ManagerController::class,'handleRequest'])->name('manager.books.handle')->middleware('auth');
