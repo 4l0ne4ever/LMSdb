@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\BookController;
 
+use App\Http\Controllers\Controller;
 route::get('/',[HomeController::class,'index']);
 
 Route::middleware([

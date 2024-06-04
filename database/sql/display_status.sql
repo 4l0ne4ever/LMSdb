@@ -1,0 +1,1 @@
+SELECT * FROM accountstatus WHERE user_id = :user_id;

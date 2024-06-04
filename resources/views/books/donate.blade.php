@@ -18,6 +18,7 @@
         <div class="col-lg-12">
           <form id="contact" method="Post" action="{{ route('donate') }}">
             @csrf
+            <input type="hidden" name="user_id" value="{{ Auth::id() }}">
             <div class="row">
               <div class="col-lg-4">
                 <fieldset>
