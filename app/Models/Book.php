@@ -21,8 +21,18 @@ class Book extends Model
     protected $fillable = [
         'title','author','category','quantity','rating','image_link','created_at','updated_at','status','managed_by'
     ];
-    public function contributions()
+    public function borrows()
 {
-    return $this->hasMany(Contribution::class, 'book_id');
+    return $this->hasMany(Borrow::class, 'book_id', 'id');
+}
+
+public function contributions()
+{
+    return $this->hasMany(Contribution::class, 'book_id', 'id');
+}
+
+public function ratings()
+{
+    return $this->hasMany(Rating::class, 'book_id', 'id');
 }
 }

@@ -23,6 +23,11 @@ class Contribution extends Model
     ];
     public function reader()
 {
-    return $this->belongsTo(Reader::class, 'reader_id', 'user_id'); // Assuming 'user_id' is the foreign key in the 'readers' table
+    return $this->belongsTo(Reader::class, 'reader_id', 'user_id');
+}
+
+public function book()
+{
+    return $this->belongsTo(Book::class, 'book_id', 'id');
 }
 }
