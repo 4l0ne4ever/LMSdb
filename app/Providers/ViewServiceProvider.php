@@ -31,17 +31,16 @@ public function boot()
         if (Auth::check()) {
             $user = Auth::user();
 
-            if ($user->usertype == 'user') {
-                // Get the SQL query from the get_accountstatus.sql file
-                $sql = file_get_contents(database_path('sql/display_status.sql'));
+            if ($user->usertype == 'user' && $user->reader) {
+                // Fetch data from the related reader model
+                $reader = $user->reader;
 
-                // Replace the placeholder with the actual value
-                $sql = str_replace(':user_id', $user->id, $sql);
-
-                // Execute the SQL query
-                $accountStatus = DB::select($sql);
-
-                $view->with('accountStatus', $accountStatus[0]);
+                $view->with([
+                    'status' => $reader->status,
+                    'borrowed_quantity' => $reader->borrowed_quantity,
+                    'contributed_quantity' => $reader->contributed_quantity,
+                    'lost_book' => $reader->lost_book,
+                ]);
             }
         }
     });

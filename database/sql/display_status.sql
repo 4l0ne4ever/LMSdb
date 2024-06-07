@@ -1,1 +1,1 @@
-SELECT * FROM accountstatus WHERE user_id = :user_id;
+SELECT * FROM readers WHERE user_id = :user_id;

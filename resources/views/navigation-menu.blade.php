@@ -86,15 +86,19 @@
                             
 @if (Auth::user()->usertype == 'user')
     <div class="block px-4 py-2 text-xs text-gray-600">
-        <p class="text-xs text-gray-600">Status: {{ $accountStatus->status }}</p>
+        <p class="text-xs text-gray-600">Status: {{ $status }}</p>
     </div>
     <div class="block px-4 py-2 text-xs text-gray-600">
-        <p class="text-xs text-gray-600">Borrowed Books: {{ $accountStatus->borrowed_books }}</p>
+        <p class="text-xs text-gray-600">Borrowed Books: {{ $borrowed_quantity }}</p>
     </div>
     <div class="block px-4 py-2 text-xs text-gray-600">
-        <p class="text-xs text-gray-600">Contributed Books: {{ $accountStatus->quantity }}</p>
+        <p class="text-xs text-gray-600">Contributed Books: {{ $contributed_quantity }}</p>
     </div>
-@endif
+    <div class="block px-4 py-2 text-xs text-gray-600">
+        <p class="text-xs text-gray-600">Lost Books: {{ $lost_book }}</p>
+    </div>
+@endif 
+
 
                             <x-dropdown-link href="{{ route('profile.show') }}">
                                 {{ __('Profile') }}

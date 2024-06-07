@@ -3,6 +3,12 @@
     <div>
         <h2>{{ $book->title }}</h2>
         <p>{{ $book->author }}</p>
+        @foreach ($book->contributions as $contribution)
+            <p>Contributed by: {{ $contribution->reader->name }}</p>
+            <p>Quantity: {{ $contribution->quantity }}</p>
+            <p>Category: {{ $book->category }}</p> <!-- Assuming category is a property of Book -->
+            <p>Contributed At: {{ $contribution->contributed_at }}</p>
+        @endforeach
         <form method="POST" action="{{ route('manager.books.handle', ['id' => $book->id, 'action' => 'approve']) }}">
             @csrf
             <button type="submit">Approve</button>

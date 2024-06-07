@@ -4,21 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AccountStatus extends Model
+class Reader extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'accountstatus';
-
+    protected $table = 'readers';
+    public $timestamps = false;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'user_id','status','quantity'
+        'user_id','name','email','password','phone','address','borrowed_quantity','contributed_quantity','status','usertype','lost_book'
     ];
 }

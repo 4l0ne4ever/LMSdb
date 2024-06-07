@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Book extends Model
+class Rating extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'books';
+    protected $table = 'rating';
 
     /**
      * The attributes that are mass assignable.
@@ -19,10 +19,6 @@ class Book extends Model
      * @var array
      */
     protected $fillable = [
-        'title','author','category','quantity','rating','image_link','created_at','updated_at','status','managed_by'
+        'reader_id','book_id','rating'
     ];
-    public function contributions()
-{
-    return $this->hasMany(Contribution::class, 'book_id');
-}
 }

@@ -19,6 +19,10 @@ class Contribution extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id','book_id','contributed_at','quantity'
+        'reader_id','book_id','contributed_at','quantity'
     ];
+    public function reader()
+{
+    return $this->belongsTo(Reader::class, 'reader_id', 'user_id'); // Assuming 'user_id' is the foreign key in the 'readers' table
+}
 }
