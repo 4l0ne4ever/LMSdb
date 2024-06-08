@@ -15,7 +15,10 @@ class ManagerController extends Controller
 {
     public function index(){
         if(Auth::user()->usertype=='user'){
-            return view('dashboard');
+            $books = Book::inRandomOrder()
+            ->take(100)
+            ->get();
+            return view('dashboard',compact('books'));
         } else {
             return view('manager.index');
         }
@@ -23,9 +26,9 @@ class ManagerController extends Controller
     public function pending(){
         $books = Book::with(['contributions' => function($query) {
             $query->with(['reader' => function($query) {
-                $query->select('id', 'name'); // Selecting reader id and name
+                $query->select('id', 'name'); 
             }])
-            ->select('book_id', 'reader_id', 'quantity', 'contributed_at'); // Selecting fields from contributions
+            ->select('book_id', 'reader_id', 'quantity', 'contributed_at'); 
         }])
         ->where('status', 'pending')
         ->get();
@@ -34,12 +37,8 @@ class ManagerController extends Controller
     }
 
     public function handleRequest(Request $request, $id, $action){
-        // Get the book from the database
         $book = Book::find($id);
-
-    // Handle the request
     if ($action == 'approve') {
-        // Change the book status to 'ok'
         $book->status = 'ok';
         $book->save();
         $contribution = DB::table('contribution')->where('book_id', $id)->first();

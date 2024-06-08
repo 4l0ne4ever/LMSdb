@@ -26,3 +26,5 @@ Route::get('/donate', [BookController::class, 'donateForm'])->name('donate.form'
 Route::post('/donate', [BookController::class, 'donate'])->name('donate')->middleware('auth');
 Route::get('/pending', [ManagerController::class, 'pending'])->name('manager.books.pending')->middleware('auth');
 Route::post('/pending/{id}/{action}', [ManagerController::class,'handleRequest'])->name('manager.books.handle')->middleware('auth');
+Route::get('/book_details/{id}',[HomeController::class, 'details'])->name('book_details');
+Route::get('/borrow_books/{id}',[HomeController::class, 'borrow'])->name('borrow_books')->middleware('auth');
