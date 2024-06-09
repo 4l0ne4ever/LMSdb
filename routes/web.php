@@ -36,3 +36,4 @@ Route::middleware('auth')->group(function () {
 Route::get('/explore',[HomeController::class,'explore'])->name('explore');
 Route::get('/search',[HomeController::class,'search'])->name('search');
 Route::get('/filter', [HomeController::class,'filter']);
+Route::get('/borrowing',[HomeController::class,'showBorrow'])->name('showBorrow');

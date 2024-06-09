@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +20,7 @@
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
-<!--
+
 </head>
 <body>
          <!-- ***** Preloader Start ***** -->
@@ -76,65 +77,91 @@
     </div>
   </header>
   <!-- ***** Header Area End ***** -->
-    
-  <div class="item-details-page">
+  <div class="currently-market" style="margin-top:50px;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="section-heading">
+            <div class="line-dec"></div>
+            <h2><em>Items</em> Currently Borrowing.</h2>
+          </div>
+        </div>
+
+        @if(session()->has('message'))
+<div class="alert alert-success">
+  <button class="close" type="button" data-bs-dismiss="alert" aria-hidden="true" >X</button>
+        {{session()->get('message')}}
+</div>
+        @endif
+
+        <div class="col-lg-6">
+          <div class="filters">
+            <ul>
+              <li data-filter="*"  class="active">All Books</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-12">
+          <div class="row grid">
+@foreach($borrowedBooks as $book)
+<div class="col-lg-6 currently-market-item all msc">
+  <div class="item">
+    <div class="left-image">
+      <img src="{{$book->image_link}}" alt="" style="border-radius: 20px; min-width: 195px;">
+    </div>
+    <div class="right-content">
+      <h4>{{ strlen($book->title) > 20 ? substr($book->title, 0, 20) . '...' : $book->title }}</h4>
+      <span class="author">
+        <img src="assets/images/author.jpg" alt="" style="max-width: 50px; border-radius: 50%;">
+        <h6>{{ $book->author }}</h6>
+      </span>
+      <div class="line-dec"></div>
+      <span class="bid">
+        Borrowed at: <br><strong>{{$book->borrowed_at}}</strong><br> 
+      </span>
+      <span class="ends">
+        Return at: <br><strong>{{$book->returned_at}}</strong><br>
+      </span>
+      <div class="">
+      <a class="btn btn-primary" href="">Lost</a>
+      </div>
+      <br>
+      <div class="">
+      <a class="btn btn-primary" href="">Return Book</a>
+      </div>
+    </div>
+  </div>
+</div>
+@endforeach
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<footer>
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <div class="section-heading">
-            <div class="line-dec"></div>
-            <h2>Apply For <em>Your Book</em> Here.</h2>
-          </div>
-        </div> 
-        <div class="col-lg-12">
-          <form id="contact" method="Post" action="{{ route('donate') }}">
-            @csrf
-            <input type="hidden" name="user_id" value="{{ Auth::id() }}">
-            <div class="row">
-              <div class="col-lg-4">
-                <fieldset>
-                  <label for="title">Book Title</label>
-                  <input type="text" name="title" id="title" autocomplete="on" required>
-                </fieldset>
-              </div>
-              <div class="col-lg-4">
-                <fieldset>
-                  <label for="author">Author</label>
-                  <input type="text" name="author" id="author" autocomplete="on" required>
-                </fieldset>
-              </div>
-              <div class="col-lg-4">
-                <fieldset>
-                  <label for="category">Category</label>
-                  <input type="text" name="category" id="category" autocomplete="on" required>
-                </fieldset>
-              </div>
-              <div class="col-lg-6">
-                <fieldset>
-                  <label for="quantity">Quantity</label>
-                  <input type="number" name="quantity" id="quantity" autocomplete="on" required>
-                </fieldset>
-              </div>
-              <div class="col-lg-4">
-                <fieldset>
-                  <label for="image_link">Picture</label>
-                  <input type="text" id="image_link" name="image_link" multiple />
-                </fieldset>
-              </div>
-              <div class="col-lg-8">
-                <fieldset>
-                  <button type="submit" id="form-submit" class="orange-button">Submit Your Book</button>
-                </fieldset>
-              </div>
-            </div>
-          </form> 
+          <p>Copyright © 2024 <a target="_blank" href="https://www.youtube.com/channel/UCVBdwet972DJR_AjMzu6duw">Christopher
+          &nbsp;&nbsp;
+          Designed by <a title="HTML CSS Templates" rel="sponsored" href="https://www.youtube.com/channel/UCVBdwet972DJR_AjMzu6duw" target="_blank">Christopher</a></p>
         </div>
-        
-        </div>
-
       </div>
     </div>
+  </footer>
 
-    @include('user.footer');
+
+  <!-- Scripts -->
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+  <script src="assets/js/isotope.min.js"></script>
+  <script src="assets/js/owl-carousel.js"></script>
+
+  <script src="assets/js/tabs.js"></script>
+  <script src="assets/js/popup.js"></script>
+  <script src="assets/js/custom.js"></script>
 </body>
 </html>

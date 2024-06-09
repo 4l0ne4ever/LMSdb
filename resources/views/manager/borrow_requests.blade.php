@@ -1,6 +1,6 @@
 @foreach ($borrowRequests as $request)
     <div>
-        <p>{{ $request->reader->name }} wants to borrow {{ $request->book->title }}</p>
+        <p>{{ $request->reader->name }} wants to borrow {{ $request->book->title }} by {{ $request->book->author}}</p>
         <form action="{{ route('manager.confirm_borrow', $request->id) }}" method="POST">
             @csrf
             <button type="submit">Confirm</button>

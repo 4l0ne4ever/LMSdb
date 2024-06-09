@@ -11,6 +11,7 @@ use App\Models\Borrow;
 use App\Models\Contribution;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Carbon\Carbon;
 class HomeController extends Controller
 {
     public function index(){
@@ -49,6 +50,22 @@ class HomeController extends Controller
     public function details($id){
         $books = Book::find($id);
         return view('books.details',compact('books'));
+    }
+    public function showBorrow(){
+        $readerId = auth()->user()->reader->user_id;
+
+    $borrowedBooks = DB::table('borrow')
+        ->join('books', 'borrow.book_id', '=', 'books.id')
+        ->where('borrow.reader_id', $readerId)
+        ->select('books.title', 'books.author', 'books.image_link', 'borrow.borrowed_at', 'borrow.returned_at')
+        ->get()
+        ->map(function ($book) {
+            $book->borrowed_at = Carbon::parse($book->borrowed_at)->format('d/m/Y');
+            $book->returned_at = $book->returned_at ? Carbon::parse($book->returned_at)->format('d/m/Y') : null;
+            return $book;
+        });
+
+    return view('books.borrow', compact('borrowedBooks'));
     }
     public function borrow($id){
         if(auth()->id()){

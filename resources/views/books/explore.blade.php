@@ -56,7 +56,7 @@ https://templatemo.com/tm-577-liberty-market
                     <ul class="nav">
                         <li><a href="{{url('/')}}" class="active">Home</a></li>
                         <li><a href="{{url('explore')}}">Explore</a></li>
-                        <li><a href="details.html">Item Details</a></li>
+                        <li><a href="{{ route('showBorrow') }}">Book Borrowing</a></li>
                         <li><a href="author.html">Author</a></li>
                         <li><a href="{{url('donate')}}">Donate</a></li>
                         @if (Route::has('login'))
