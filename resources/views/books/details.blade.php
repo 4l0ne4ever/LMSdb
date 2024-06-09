@@ -3,13 +3,13 @@
 
   <head>
 
-    <meta charset="utf-8">
+  <meta charset="utf-8">
     <meta name="author" content="templatemo">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
 
-    <title>Liberty Template - NFT Item Detail Page</title>
+    <title>Liberty NFT Marketplace - HTML CSS Template</title>
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -21,19 +21,12 @@
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
-<!--
-
-TemplateMo 577 Liberty Market
-
-https://templatemo.com/tm-577-liberty-market
-
--->
   </head>
 
 <body>
 
-  <!-- ***** Preloader Start ***** -->
-  <div id="js-preloader" class="js-preloader">
+      <!-- ***** Preloader Start ***** -->
+      <div id="js-preloader" class="js-preloader">
     <div class="preloader-inner">
       <span class="dot"></span>
       <div class="dots">
@@ -52,17 +45,29 @@ https://templatemo.com/tm-577-liberty-market
             <div class="col-12">
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
-                    <a href="{{ url('/dashboard') }}" class="logo">
+                    <a href="{{url('/')}}" class="logo">
                         <img src="assets/images/logo.png" alt="">
                     </a>
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                        <li><a href="{{ url('/dashboard') }}">Home</a></li>
-                        <li><a href="explore.html">Explore</a></li>
-                        <li><a href="details.html" class="active">Item Details</a></li>
+                        <li><a href="{{url('/')}}" class="active">Home</a></li>
+                        <li><a href="{{url('explore')}}">Explore</a></li>
+                        <li><a href="{{ route('showBorrow') }}">Book Borrowing</a></li>
                         <li><a href="author.html">Author</a></li>
-                        <li><a href="create.html">Create Yours</a></li>
+                        <li><a href="{{url('donate')}}">Donate</a></li>
+                        @if (Route::has('login'))
+                            
+                                @auth
+                                  <x-app-layout></x-app-layout>
+                                @else  
+                                <li><a href="{{ route('login') }}">Login</a></li>
+                                    @if (Route::has('register'))
+                                      <li><a href="{{ route('register') }}">Register</a></li>
+                                    @endif
+                                @endauth
+                            
+                        @endif
                     </ul>   
                     <a class='menu-trigger'>
                         <span>Menu</span>
@@ -117,17 +122,18 @@ https://templatemo.com/tm-577-liberty-market
     </div>
       </div>
 
-<footer>
+ <footer>
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <p>Copyright © 2024 <a target="_blank" href="https://www.youtube.com/channel/UCeNYDojo4nU2sbHz1sMsBXw">Web Tech Knowledge
+          <p>Copyright © 2024 <a target="_blank" href="https://www.youtube.com/channel/UCVBdwet972DJR_AjMzu6duw">Christopher
           &nbsp;&nbsp;
-          Designed by <a title="HTML CSS Templates" rel="sponsored" href="https://www.youtube.com/channel/UCeNYDojo4nU2sbHz1sMsBXw" target="_blank">Web Tech Knowledge</a></p>
+          Designed by <a title="HTML CSS Templates" rel="sponsored" href="https://www.youtube.com/channel/UCVBdwet972DJR_AjMzu6duw" target="_blank">Christopher</a></p>
         </div>
       </div>
     </div>
   </footer>
+
 
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->

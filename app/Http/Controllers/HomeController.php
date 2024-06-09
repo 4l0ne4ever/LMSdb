@@ -114,4 +114,13 @@ class HomeController extends Controller
         }
         return redirect()->route('showBorrow')->with('message', 'Return requested failed.');
     }
+    public function reportLost($id)
+{
+    $borrow = DB::table('borrow')->where('book_id', $id)->first();
+    if ($borrow && $borrow->reader_id == auth()->user()->reader->user_id) {
+        DB::table('borrow')->where('book_id', $id)->update(['borrowed_at' => null]);
+        return redirect()->route('showBorrow')->with('message', 'Return requested.');
+    }
+    return redirect()->route('showBorrow')->with('message', 'Return requested failed.');
+}
 }

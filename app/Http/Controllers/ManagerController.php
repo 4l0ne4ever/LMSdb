@@ -107,4 +107,41 @@ public function confirmReturn($id) {
     }
     return redirect()->route('manager.return_requests')->with('err', 'Return cancel.');
 }
+public function showLost(){
+    $lostBooks = Borrow::whereNull('borrowed_at')->with('book', 'reader')->get();
+    return view('manager.lost', compact('lostBooks'));
+}
+public function approveLost(Request $request, $borrowId)
+{
+    $borrow = DB::table('borrow')->where('id', $borrowId)->first();
+    if (!$borrow) {
+        return redirect()->route('showLost')->with('error', 'Borrow record not found.');
+    }
+    $readerId = $borrow->reader_id;
+    DB::table('readers')->where('user_id', $readerId)->increment('lost_book');
+    $updatedReader = DB::table('readers')->where('user_id', $readerId)->first();
+    $newStatus = $this->determineNewStatus($updatedReader->status, $updatedReader->lost_book);
+    $updateArray = ['status' => $newStatus];
+    if ($newStatus !== $updatedReader->status) {
+        $updateArray['contributed_quantity'] = 0;
+    }
+    DB::table('readers')->where('id', $readerId)->update($updateArray);
+    DB::table('borrow')->where('id', $borrowId)->delete();
+    return redirect()->route('showLost')->with('success', 'Lost book processed successfully.');
+}
+
+private function determineNewStatus($currentStatus, $lostBookCount)
+{
+    if ($lostBookCount > 2) {
+        switch ($currentStatus) {
+            case 'platinum':
+                return 'green';
+            case 'green':
+                return 'red';
+            default:
+                return $currentStatus;
+        }
+    }
+    return $currentStatus;
+}
 }

@@ -124,13 +124,14 @@
       <span class="ends">
         Return at: <br><strong>{{$book->returned_at}}</strong><br>
       </span>
-      <div class="">
-      <a class="btn btn-primary" href="">Lost</a>
-      </div>
+      <form action="{{ route('report.lost', ['id' => $book->id]) }}" method="POST">
+    @csrf
+    <button class="btn btn-primary" type="submit">Report as Lost</button>
+</form>
       <br>
       <form action="{{ route('book.return.request', ['id' => $book->id]) }}" method="POST">
         @csrf
-        <button class="btn btn-primary" type="submit">Return</button>
+        <button class="btn btn-primary" type="submit">Return Book</button>
     </form>
     </div>
   </div>

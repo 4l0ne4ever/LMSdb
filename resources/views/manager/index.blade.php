@@ -16,6 +16,8 @@
     <br>
     <div><a href="{{ route('manager.return_requests') }}" class="btn btn-secondary">Return Requests</a></div>
     <br>
+    <div><a href="{{ route('showLost') }}" class="btn btn-secondary">Report Lost Books</a></div>
+    <br>
 <div>
 <a href="{{ route('manager.books.pending') }}" class="btn btn-primary">Contribution Requests</a>
 </div>
