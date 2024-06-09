@@ -197,6 +197,14 @@ https://templatemo.com/tm-577-liberty-market
             <h2><em>Items</em> Currently In The Market.</h2>
           </div>
         </div>
+
+        @if(session()->has('message'))
+<div class="alert alert-success">
+  <button class="close" type="button" data-bs-dismiss="alert" aria-hidden="true" >X</button>
+        {{session()->get('message')}}
+</div>
+        @endif
+
         <div class="col-lg-6">
           <div class="filters">
             <ul>
@@ -232,11 +240,11 @@ https://templatemo.com/tm-577-liberty-market
         Category<br><strong>{{$book->category}}</strong><br> 
       </span>
       <div class="text-button">
-        <a href="{{url('book_details',$book->id)}">View Details</a>
+        <a href="{{url('book_details',$book->id)}}">View Details</a>
       </div>
       <br>
       <div class="">
-        <a class="btn btn-primary" href="{{url('borrow_books',$book->id)}">Borrow</a>
+      <a class="btn btn-primary" href="{{ url('borrow_books', $book->id) }}">Borrow</a>
       </div>
     </div>
   </div>

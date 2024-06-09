@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Reader;
 use App\Models\Book;
+use App\Models\Borrow;
 use App\Models\Contribution;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -62,5 +63,33 @@ class ManagerController extends Controller
 
     return redirect()->route('manager.books.pending');
     }
+    public function showBorrowRequests()
+{
+    // Fetch borrow requests where 'borrowed_at' and 'returned_at' are null (pending confirmation)
+    $borrowRequests = Borrow::whereNull('borrowed_at')->whereNull('returned_at')->with('book', 'reader')->get();
+    return view('manager.borrow_requests', compact('borrowRequests'));
 }
-    
+
+public function confirmBorrow(Request $request, $id)
+{
+    DB::transaction(function () use ($id) {
+        $borrow = Borrow::findOrFail($id);
+        $borrow->update([
+            'borrowed_at' => now(),
+            'returned_at' => now()->addMonths(6),
+        ]);
+
+        $borrow->book->decrement('quantity');
+        $borrow->reader->increment('borrowed_quantity');
+    });
+
+    return redirect()->route('manager.borrow_requests')->with('success', 'Borrow request confirmed.');
+}
+
+public function cancelBorrow($id)
+{
+    // Directly delete the borrow request
+    Borrow::findOrFail($id)->delete();
+    return redirect()->route('manager.borrow_requests')->with('success', 'Borrow request canceled.');
+}
+}

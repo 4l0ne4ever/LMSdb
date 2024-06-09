@@ -21,6 +21,8 @@ class Borrow extends Model
     protected $fillable = [
         'reader_id','book_id','borrowed_at','returned_at'
     ];
+    public $timestamps = false;
+
     public function reader()
 {
     return $this->belongsTo(Reader::class, 'reader_id', 'user_id');

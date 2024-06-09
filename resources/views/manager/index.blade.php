@@ -12,7 +12,10 @@
     </x-app-layout>
     </div>
     
-
-<a href="{{ route('manager.books.pending') }}" class="btn btn-primary">See Requests</a>
+    <div><a href="{{ route('manager.borrow_requests') }}" class="btn btn-secondary">Borrow Requests</a></div>
+    <br>
+<div>
+<a href="{{ route('manager.books.pending') }}" class="btn btn-primary">See Contribution Requests</a>
+</div>
 </body>
 </html>
