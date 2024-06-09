@@ -39,29 +39,50 @@ class ManagerController extends Controller
 
     public function handleRequest(Request $request, $id, $action){
         $book = Book::find($id);
-    if ($action == 'approve') {
-        $book->status = 'ok';
-        $book->save();
-        $contribution = DB::table('contribution')->where('book_id', $id)->first();
-
-        if ($contribution) {
-            $reader = DB::table('readers')->where('user_id', $contribution->reader_id)->first(); 
+        if ($action == 'approve') {
+            $book->status = 'ok';
+            $book->save();
+            $contribution = DB::table('contribution')->where('book_id', $id)->first();
     
-            if ($reader) {
-                $newQuantity = $reader->contributed_quantity + 1;
-                $newStatus = $newQuantity > 3 ? 'platinum' : $reader->status;
-                DB::table('readers')->where('user_id', $reader->user_id)->update([
-                    'contributed_quantity' => $newQuantity,
-                    'status' => $newStatus,
-                ]);
+            if ($contribution) {
+                $reader = DB::table('readers')->where('user_id', $contribution->reader_id)->first(); 
+    
+                if ($reader) {
+                    $newQuantity = $reader->contributed_quantity + 1;
+                    $resetQuantity = 0;
+                    $newStatus = $reader->status; // Default to current status
+    
+                    // Check if contributed_quantity exceeds 3
+                    if ($newQuantity > 3) {
+                        // Update status based on current status
+                        switch ($reader->status) {
+                            case 'red':
+                                $newStatus = 'green';
+                                break;
+                            case 'green':
+                                $newStatus = 'platinum';
+                                break;
+                            default:
+                                // Optionally handle other cases or do nothing
+                                break;
+                        }
+                        // Reset contributed_quantity to 0 after status update
+                        $newQuantity = $resetQuantity;
+                    }
+    
+                    // Update reader with new status and contributed_quantity
+                    DB::table('readers')->where('user_id', $reader->user_id)->update([
+                        'contributed_quantity' => $newQuantity,
+                        'status' => $newStatus,
+                    ]);
+                }
             }
+        } else if ($action == 'reject') {
+            DB::table('contribution')->where('book_id', $id)->delete();
+            $book->delete();
         }
-    } else if ($action == 'reject') {
-        DB::table('contribution')->where('book_id', $id)->delete();
-        $book->delete();
-    }
-
-    return redirect()->route('manager.books.pending');
+    
+        return redirect()->route('manager.books.pending');
     }
     public function showBorrowRequests()
 {
