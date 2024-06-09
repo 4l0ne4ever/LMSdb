@@ -22,6 +22,30 @@ class HomeController extends Controller
     public function donate(){
         return view('books.donate');
     }
+    public function explore(){
+        $categories = Book::select('category')->distinct()->pluck('category');
+        $books = Book::inRandomOrder()
+        ->take(200)
+        ->get();
+        return view('books.explore',compact('books','categories'));
+    }
+    public function search(Request $request){
+        $categories = Book::select('category')->distinct()->pluck('category');
+        $search = $request->search;
+        $books = Book::where('title','LIKE','%'.$search.'%')->orWhere('author','LIKE','%'.$search.'%')->inRandomOrder()
+        ->take(200)->get();
+        return view('books.explore',compact('books','categories'));
+    }
+    public function filter(Request $request){
+        $categories = Book::select('category')->distinct()->pluck('category');
+        $category = $request->category;
+        if($category) {
+            $books = Book::where('category', $category)->limit(200)->get();
+        } else {
+            $books = Book::limit(200)->get(); 
+        }
+        return view('books.explore', compact('books', 'categories'));
+    }
     public function details($id){
         $books = Book::find($id);
         return view('books.details',compact('books'));
@@ -30,7 +54,7 @@ class HomeController extends Controller
         if(auth()->id()){
             $book = Book::find($id);
             $user = auth()->user();
-            $reader = $user->reader; // Fetch the reader using the defined relationship
+            $reader = $user->reader;
         
             if (!$book || $book->quantity <= 0) {
                 return redirect()->back()->with('message', 'This book is not available for borrowing.');
@@ -54,10 +78,10 @@ class HomeController extends Controller
             }
         
             Borrow::create([
-                'reader_id' => $reader->user_id, // Use the reader's ID from the relationship
+                'reader_id' => $reader->user_id, 
                 'book_id' => $id,
-                'borrowed_at' => null, // Indicates pending confirmation
-                'returned_at' => null, // Indicates pending confirmation
+                'borrowed_at' => null,
+                'returned_at' => null,
             ]);
             
             return redirect()->back()->with('message', 'Your borrow request has been sent.');

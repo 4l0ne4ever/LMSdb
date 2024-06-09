@@ -33,3 +33,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/confirm-borrow/{id}', [ManagerController::class,'confirmBorrow'])->name('manager.confirm_borrow');
     Route::delete('/cancel-borrow/{id}', [ManagerController::class,'cancelBorrow'])->name('manager.cancel_borrow');
 });
+Route::get('/explore',[HomeController::class,'explore'])->name('explore');
+Route::get('/search',[HomeController::class,'search'])->name('search');
+Route::get('/filter', [HomeController::class,'filter']);
