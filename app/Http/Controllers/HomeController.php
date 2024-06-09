@@ -57,7 +57,7 @@ class HomeController extends Controller
     $borrowedBooks = DB::table('borrow')
         ->join('books', 'borrow.book_id', '=', 'books.id')
         ->where('borrow.reader_id', $readerId)
-        ->select('books.title', 'books.author', 'books.image_link', 'borrow.borrowed_at', 'borrow.returned_at')
+        ->select('books.id','books.title', 'books.author', 'books.image_link', 'borrow.borrowed_at', 'borrow.returned_at')
         ->get()
         ->map(function ($book) {
             $book->borrowed_at = Carbon::parse($book->borrowed_at)->format('d/m/Y');
@@ -105,5 +105,13 @@ class HomeController extends Controller
         } else {
             return redirect('/login');
         }
+    }
+    public function returnRequest($id) {
+        $borrow = DB::table('borrow')->where('book_id', $id)->first();
+        if ($borrow && $borrow->reader_id == auth()->user()->reader->user_id) {
+            DB::table('borrow')->where('book_id', $id)->update(['returned_at' => null]);
+            return redirect()->route('showBorrow')->with('message', 'Return requested.');
+        }
+        return redirect()->route('showBorrow')->with('message', 'Return requested failed.');
     }
 }

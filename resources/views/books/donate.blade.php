@@ -48,11 +48,11 @@
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                        <li><a href="{{url('/')}}" class="active">Home</a></li>
+                        <li><a href="{{url('/')}}" >Home</a></li>
                         <li><a href="{{url('explore')}}">Explore</a></li>
                         <li><a href="{{ route('showBorrow') }}">Book Borrowing</a></li>
                         <li><a href="author.html">Author</a></li>
-                        <li><a href="{{url('donate')}}">Donate</a></li>
+                        <li><a href="{{url('donate')}}" class="active">Donate</a></li>
                         @if (Route::has('login'))
                             
                                 @auth

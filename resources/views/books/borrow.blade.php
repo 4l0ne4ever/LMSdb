@@ -49,9 +49,9 @@
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                        <li><a href="{{url('/')}}" class="active">Home</a></li>
+                        <li><a href="{{url('/')}}" >Home</a></li>
                         <li><a href="{{url('explore')}}">Explore</a></li>
-                        <li><a href="{{ route('showBorrow') }}">Book Borrowing</a></li>
+                        <li><a href="{{ route('showBorrow') }} " class="active">Book Borrowing</a></li>
                         <li><a href="author.html">Author</a></li>
                         <li><a href="{{url('donate')}}">Donate</a></li>
                         @if (Route::has('login'))
@@ -88,8 +88,10 @@
         </div>
 
         @if(session()->has('message'))
+        @foreach($borrowedBooks as $book)
 <div class="alert alert-success">
-  <button class="close" type="button" data-bs-dismiss="alert" aria-hidden="true" >X</button>
+  <button class="close" type="button" data-bs-dismiss="alert" aria-hidden="true" >X       {{ strlen($book->title) > 20 ? substr($book->title, 0, 20) . '...' : $book->title }}</button>
+  @endforeach
         {{session()->get('message')}}
 </div>
         @endif
@@ -126,9 +128,10 @@
       <a class="btn btn-primary" href="">Lost</a>
       </div>
       <br>
-      <div class="">
-      <a class="btn btn-primary" href="">Return Book</a>
-      </div>
+      <form action="{{ route('book.return.request', ['id' => $book->id]) }}" method="POST">
+        @csrf
+        <button class="btn btn-primary" type="submit">Return</button>
+    </form>
     </div>
   </div>
 </div>

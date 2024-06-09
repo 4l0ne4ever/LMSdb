@@ -65,7 +65,6 @@ class ManagerController extends Controller
     }
     public function showBorrowRequests()
 {
-    // Fetch borrow requests where 'borrowed_at' and 'returned_at' are null (pending confirmation)
     $borrowRequests = Borrow::whereNull('borrowed_at')->whereNull('returned_at')->with('book', 'reader')->get();
     return view('manager.borrow_requests', compact('borrowRequests'));
 }
@@ -88,8 +87,24 @@ public function confirmBorrow(Request $request, $id)
 
 public function cancelBorrow($id)
 {
-    // Directly delete the borrow request
     Borrow::findOrFail($id)->delete();
     return redirect()->route('manager.borrow_requests')->with('success', 'Borrow request canceled.');
+}
+public function return(){
+    $returnRequests = Borrow::whereNotNull('borrowed_at')->whereNull('returned_at')->with('book', 'reader')->get();
+    return view('manager.return_requests', compact('returnRequests'));
+
+}
+public function confirmReturn($id) {
+    $borrow = DB::table('borrow')->where('id', $id)->first();
+    if ($borrow) {
+        DB::transaction(function () use ($borrow) {
+            DB::table('books')->where('id', $borrow->book_id)->increment('quantity');
+            DB::table('readers')->where('user_id', $borrow->reader_id)->decrement('borrowed_quantity');
+            DB::table('borrow')->where('id', $borrow->id)->delete();
+        });
+        return redirect()->route('manager.return_requests')->with('success', 'Return confirmed.');
+    }
+    return redirect()->route('manager.return_requests')->with('err', 'Return cancel.');
 }
 }

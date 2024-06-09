@@ -14,8 +14,10 @@
     
     <div><a href="{{ route('manager.borrow_requests') }}" class="btn btn-secondary">Borrow Requests</a></div>
     <br>
+    <div><a href="{{ route('manager.return_requests') }}" class="btn btn-secondary">Return Requests</a></div>
+    <br>
 <div>
-<a href="{{ route('manager.books.pending') }}" class="btn btn-primary">See Contribution Requests</a>
+<a href="{{ route('manager.books.pending') }}" class="btn btn-primary">Contribution Requests</a>
 </div>
 </body>
 </html>
