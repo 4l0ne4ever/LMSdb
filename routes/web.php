@@ -8,6 +8,8 @@ use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\BookController;
 
+use App\Http\Controllers\RatingController;
+
 use App\Http\Controllers\Controller;
 route::get('/',[HomeController::class,'index']);
 
@@ -43,3 +45,4 @@ Route::get('/return-requests', [ManagerController::class, 'return'])->name('mana
 Route::get('/lost',[ManagerController::class,'showLost'])->name('showLost');
 Route::post('/report-lost/{id}', [HomeController::class,'reportLost'])->name('report.lost');
 Route::post('/approve-lost/{borrowId}', [ManagerController::class,'approveLost'])->name('approve.lost');
+Route::post('/rating/{bookId}',[RatingController::class,'add'])->name('addRating');

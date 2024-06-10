@@ -123,4 +123,5 @@ class HomeController extends Controller
     }
     return redirect()->route('showBorrow')->with('message', 'Return requested failed.');
 }
+
 }

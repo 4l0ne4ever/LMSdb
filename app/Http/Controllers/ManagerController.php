@@ -43,18 +43,13 @@ class ManagerController extends Controller
             $book->status = 'ok';
             $book->save();
             $contribution = DB::table('contribution')->where('book_id', $id)->first();
-    
             if ($contribution) {
                 $reader = DB::table('readers')->where('user_id', $contribution->reader_id)->first(); 
-    
                 if ($reader) {
                     $newQuantity = $reader->contributed_quantity + 1;
                     $resetQuantity = 0;
-                    $newStatus = $reader->status; // Default to current status
-    
-                    // Check if contributed_quantity exceeds 3
+                    $newStatus = $reader->status; 
                     if ($newQuantity > 3) {
-                        // Update status based on current status
                         switch ($reader->status) {
                             case 'red':
                                 $newStatus = 'green';
@@ -63,14 +58,10 @@ class ManagerController extends Controller
                                 $newStatus = 'platinum';
                                 break;
                             default:
-                                // Optionally handle other cases or do nothing
                                 break;
                         }
-                        // Reset contributed_quantity to 0 after status update
                         $newQuantity = $resetQuantity;
                     }
-    
-                    // Update reader with new status and contributed_quantity
                     DB::table('readers')->where('user_id', $reader->user_id)->update([
                         'contributed_quantity' => $newQuantity,
                         'status' => $newStatus,
@@ -145,8 +136,9 @@ public function approveLost(Request $request, $borrowId)
     $updateArray = ['status' => $newStatus];
     if ($newStatus !== $updatedReader->status) {
         $updateArray['contributed_quantity'] = 0;
+        $updateArray['lost_book'] = 0;
     }
-    DB::table('readers')->where('id', $readerId)->update($updateArray);
+    DB::table('readers')->where('user_id', $readerId)->update($updateArray);
     DB::table('borrow')->where('id', $borrowId)->delete();
     return redirect()->route('showLost')->with('success', 'Lost book processed successfully.');
 }
@@ -164,5 +156,10 @@ private function determineNewStatus($currentStatus, $lostBookCount)
         }
     }
     return $currentStatus;
+}
+public function rating($id){
+    $book = Book::find($id);
+    $ratings = DB::table('ratings')->where('book_id', $id)->get();
+    return view('manager.rating', compact('book', 'ratings'));
 }
 }
