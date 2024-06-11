@@ -132,7 +132,7 @@ https://templatemo.com/tm-577-liberty-market
                   <div class="icon">
                     <img src="assets/images/icon-01.png" alt="">
                   </div>
-                  <h4>Motivational</h4>
+                  <h4>Crafts, Hobbies & Home</h4>
                   
                 </div>
               </div>
@@ -141,7 +141,7 @@ https://templatemo.com/tm-577-liberty-market
                   <div class="icon">
                     <img src="assets/images/icon-02.png" alt="">
                   </div>
-                  <h4>Money</h4>
+                  <h4>Religion & Spirituality</h4>
                   
                 </div>
               </div>
@@ -150,7 +150,7 @@ https://templatemo.com/tm-577-liberty-market
                   <div class="icon">
                     <img src="assets/images/icon-03.png" alt="">
                   </div>
-                  <h4>Psychological</h4>
+                  <h4>Parenting & Relationships</h4>
                   
                 </div>
               </div>
@@ -159,7 +159,7 @@ https://templatemo.com/tm-577-liberty-market
                   <div class="icon">
                     <img src="assets/images/icon-04.png" alt="">
                   </div>
-                  <h4>Story</h4>
+                  <h4>Humor & Entertainment</h4>
                   
                 </div>
               </div>
@@ -168,7 +168,7 @@ https://templatemo.com/tm-577-liberty-market
                   <div class="icon">
                     <img src="assets/images/icon-05.png" alt="">
                   </div>
-                  <h4>Fictional</h4>
+                  <h4>Politics & Social Sciences</h4>
                   
                 </div>
               </div>
@@ -177,7 +177,7 @@ https://templatemo.com/tm-577-liberty-market
                   <div class="icon">
                     <img src="assets/images/icon-06.png" alt="">
                   </div>
-                  <h4>Romance</h4>
+                  <h4>Literature & Fiction</h4>
                   
                 </div>
               </div>

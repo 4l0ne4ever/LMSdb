@@ -185,14 +185,14 @@
         Return at: <br><strong>{{$book->returned_at}}</strong><br>
       </span>
       <form action="{{ route('report.lost', ['id' => $book->id]) }}" method="POST">
-    @csrf
-    <button class="btn btn-primary" type="submit">Report as Lost</button>
-</form>
+        @csrf
+        <button class="btn btn-primary" type="submit">Report as Lost</button>
+      </form>
       <br>
       <form action="{{ route('book.return.request', ['id' => $book->id]) }}" method="POST">
         @csrf
         <button class="btn btn-primary" type="submit">Return Book</button>
-    </form>
+      </form>
     <br>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ratingModal-{{ $book->id }}">
   Rate Book

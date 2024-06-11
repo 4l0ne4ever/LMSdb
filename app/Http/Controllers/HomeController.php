@@ -69,13 +69,16 @@ class HomeController extends Controller
     }
     public function borrow($id){
         if(auth()->id()){
-            $book = Book::find($id);
             $user = auth()->user();
+            if($user->usertype == 'manager'){
+                return redirect()->back()->with('message', 'Managers cannot borrow books.');
+            }
+            $book = Book::find($id);
             $reader = $user->reader;
         
             if (!$book || $book->quantity <= 0) {
                 return redirect()->back()->with('message', 'This book is not available for borrowing.');
-            }
+            } 
         
             $maxBorrowLimit = 0;
             switch ($reader->status) {

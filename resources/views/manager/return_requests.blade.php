@@ -1,4 +1,3 @@
-
 <div class="container">
     <h1>Return Requests</h1>
     @if(session('info'))
@@ -36,3 +35,4 @@
     </table>
 </div>
 <a href="{{ route('home') }}" class="btn btn-primary">Back to Home</a>
+

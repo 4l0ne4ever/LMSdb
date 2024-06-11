@@ -131,7 +131,6 @@ public function approveLost(Request $request, $borrowId)
     }
     $readerId = $borrow->reader_id;
     DB::table('readers')->where('user_id', $readerId)->increment('lost_book');
-    DB::table('readers')->where('user_id', $readerId)->decrement('borrowed_quantity');
     $updatedReader = DB::table('readers')->where('user_id', $readerId)->first();
     $newStatus = $this->determineNewStatus($updatedReader->status, $updatedReader->lost_book);
     $updateArray = ['status' => $newStatus];
@@ -141,6 +140,7 @@ public function approveLost(Request $request, $borrowId)
     }
     DB::table('readers')->where('user_id', $readerId)->update($updateArray);
     DB::table('borrow')->where('id', $borrowId)->delete();
+    DB::table('readers')->where('user_id', $readerId)->decrement('borrowed_quantity');
     return redirect()->route('showLost')->with('success', 'Lost book processed successfully.');
 }
 
