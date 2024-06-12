@@ -14,7 +14,6 @@ class BookController extends Controller
 {
 
     public function donateForm(){
-        // Show the donate form
         return view('books.donate');
     }
 
@@ -29,8 +28,7 @@ class BookController extends Controller
             'updated_at' => now(),
             'status' => 'pending'
         ]);
-    
-        // Insert contribution data directly into the contributions table
+
         DB::table('contribution')->insert([
             'reader_id' => Auth::user()->id,
             'book_id' => $book, // Use the last inserted book's ID
