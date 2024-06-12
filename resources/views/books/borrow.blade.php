@@ -150,7 +150,7 @@
         @if(session()->has('message'))
         @foreach($borrowedBooks as $book)
 <div class="alert alert-success">
-  <button class="close" type="button" data-bs-dismiss="alert" aria-hidden="true" >X       {{ strlen($book->title) > 20 ? substr($book->title, 0, 20) . '...' : $book->title }}</button>
+  <button class="close" type="button" data-bs-dismiss="alert" aria-hidden="true" >X</button>
   @endforeach
         {{session()->get('message')}}
 </div>

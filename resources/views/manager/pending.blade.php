@@ -111,11 +111,11 @@
         @endforeach
         <form method="POST" action="{{ route('manager.books.handle', ['id' => $book->id, 'action' => 'approve']) }}" style="padding-right:10px;">
             @csrf
-            <button type="submit">Approve</button>
+            <button type="submit" class="btn btn-primary">Approve</button>
         </form>
         <form method="POST" action="{{ route('manager.books.handle', ['id' => $book->id, 'action' => 'reject']) }}">
             @csrf
-            <button type="submit">Reject</button>
+            <button type="submit" class="btn btn-primary">Reject</button>
         </form>
     </div>
 @endforeach
