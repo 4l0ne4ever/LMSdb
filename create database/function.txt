@@ -1,0 +1,513 @@
+For readers: 
+public function index(){
+        $books = Book::inRandomOrder()
+            ->take(100)
+            ->get();
+        return view('dashboard',compact('books'));
+    }
+//  SELECT * FROM books ORDER BY RANDOM() LIMIT 100;
+
+public function explore(){
+        $categories = Book::select('category')->distinct()->pluck('category');
+        $books = Book::inRandomOrder()
+        ->take(200)
+        ->get();
+        return view('books.explore',compact('books','categories'));
+    }
+//  SELECT DISTINCT category FROM books;
+    SELECT * FROM books ORDER BY RANDOM() LIMIT 200;
+
+public function search(Request $request){
+        $categories = Book::select('category')->distinct()->pluck('category');
+        $search = $request->search;
+        $books = Book::where('title','LIKE','%'.$search.'%')->orWhere('author','LIKE','%'.$search.'%')->inRandomOrder()
+        ->take(200)->get();
+        return view('books.explore',compact('books','categories'));
+    }
+//  SELECT DISTINCT category FROM books;
+    SELECT * FROM books WHERE title LIKE '%searchTerm%' OR author LIKE '%searchTerm%' ORDER BY RANDOM() LIMIT 200;
+
+public function filter(Request $request){
+        $categories = Book::select('category')->distinct()->pluck('category');
+        $category = $request->category;
+        if($category) {
+            $books = Book::where('category', $category)->limit(200)->get();
+        } else {
+            $books = Book::limit(200)->get(); 
+        }
+        return view('books.explore', compact('books', 'categories'));
+    }
+//  SELECT DISTINCT category FROM books;
+-- If a category is selected
+    SELECT * FROM books WHERE category = 'selectedCategory' LIMIT 200;
+-- If no category is selected
+    SELECT * FROM books LIMIT 200;
+
+    public function showBorrow(){
+        $readerId = auth()->user()->reader->user_id;
+
+    $borrowedBooks = DB::table('borrow')
+        ->join('books', 'borrow.book_id', '=', 'books.id')
+        ->where('borrow.reader_id', $readerId)
+        ->select('books.id','books.title', 'books.author', 'books.image_link', 'borrow.borrowed_at', 'borrow.returned_at')
+        ->get()
+        ->map(function ($book) {
+            $book->borrowed_at = Carbon::parse($book->borrowed_at)->format('d/m/Y');
+            $book->returned_at = $book->returned_at ? Carbon::parse($book->returned_at)->format('d/m/Y') : null;
+            return $book;
+        });
+
+    return view('books.borrow', compact('borrowedBooks'));
+    }
+//  SELECT books.id, books.title, books.author, books.image_link, borrow.borrowed_at, borrow.returned_at
+FROM borrow
+JOIN books ON borrow.book_id = books.id
+WHERE borrow.reader_id = readerId;
+
+Borrow check condition: 
+public function borrow($id){
+        if(auth()->id()){
+            $book = Book::find($id);
+            $user = auth()->user();
+            $reader = $user->reader;
+        
+            if (!$book || $book->quantity <= 0) {
+                return redirect()->back()->with('message', 'This book is not available for borrowing.');
+            }
+        
+            $maxBorrowLimit = 0;
+            switch ($reader->status) {
+                case 'red':
+                    $maxBorrowLimit = 5;
+                    break;
+                case 'green':
+                    $maxBorrowLimit = 10;
+                    break;
+                case 'platinum':
+                    $maxBorrowLimit = 20;
+                    break;
+            }
+        
+            if ($reader->borrowed_quantity >= $maxBorrowLimit) {
+                return redirect()->back()->with('message', 'You have reached the maximum limit of borrowed books.');
+            }
+        
+            Borrow::create([
+                'reader_id' => $reader->user_id, 
+                'book_id' => $id,
+                'borrowed_at' => null,
+                'returned_at' => null,
+            ]);
+            
+            return redirect()->back()->with('message', 'Your borrow request has been sent.');
+        } else {
+            return redirect('/login');
+        }
+    }
+\\  CREATE OR REPLACE FUNCTION borrow_book(user_id INT, book_id INT)
+RETURNS TEXT LANGUAGE plpgsql AS $$
+DECLARE
+    book_quantity INT;
+    reader_status TEXT;
+    reader_borrowed_quantity INT;
+    max_borrow_limit INT;
+BEGIN
+    -- Check if the book exists and get its quantity
+    SELECT quantity INTO book_quantity FROM books WHERE id = book_id;
+    IF NOT FOUND THEN
+        RETURN 'This book is not available for borrowing.';
+    END IF;
+
+    -- Check if the book is available
+    IF book_quantity <= 0 THEN
+        RETURN 'This book is not available for borrowing.';
+    END IF;
+
+    -- Get reader's status and borrowed quantity
+    SELECT r.status, r.borrowed_quantity
+    INTO reader_status, reader_borrowed_quantity
+    FROM readers r
+    INNER JOIN users u ON u.id = r.user_id
+    WHERE u.id = user_id;
+
+    -- Determine the maximum borrow limit based on reader's status
+    CASE reader_status
+        WHEN 'red' THEN max_borrow_limit := 5;
+        WHEN 'green' THEN max_borrow_limit := 10;
+        WHEN 'platinum' THEN max_borrow_limit := 20;
+        ELSE max_borrow_limit := 0;
+    END CASE;
+
+    -- Check if the reader has reached their borrow limit
+    IF reader_borrowed_quantity >= max_borrow_limit THEN
+        RETURN 'You have reached the maximum limit of borrowed books.';
+    END IF;
+
+    -- Insert a new borrow record
+    INSERT INTO borrows (reader_id, book_id, borrowed_at, returned_at)
+    VALUES (user_id, book_id, NULL, NULL);
+
+    RETURN 'Your borrow request has been sent.';
+END;
+$$;
+
+public function returnRequest($id) {
+        $borrow = DB::table('borrow')->where('book_id', $id)->first();
+        if ($borrow && $borrow->reader_id == auth()->user()->reader->user_id) {
+            DB::table('borrow')->where('book_id', $id)->update(['returned_at' => null]);
+            return redirect()->route('showBorrow')->with('message', 'Return requested.');
+        }
+        return redirect()->route('showBorrow')->with('message', 'Return requested failed.');
+    }
+//  SELECT * FROM borrow WHERE book_id = bookId AND reader_id = readerId;
+-- Update the borrow record to indicate return request
+UPDATE borrow SET returned_at = NULL WHERE book_id = bookId;
+
+public function reportLost($id)
+{
+    $borrow = DB::table('borrow')->where('book_id', $id)->first();
+    if ($borrow && $borrow->reader_id == auth()->user()->reader->user_id) {
+        DB::table('borrow')->where('book_id', $id)->update(['borrowed_at' => null]);
+        return redirect()->route('showBorrow')->with('message', 'Return requested.');
+    }
+    return redirect()->route('showBorrow')->with('message', 'Return requested failed.');
+}
+//  SELECT * FROM borrow WHERE book_id = bookId AND reader_id = readerId;
+-- Update the borrow record to indicate the book is lost
+UPDATE borrow SET borrowed_at = NULL WHERE book_id = bookId;
+
+Donate: 
+public function donate(Request $request){
+        $book = DB::table('books')->insertGetId([
+            'title' => $request->input('title'),
+            'author' => $request->input('author'),
+            'category' => $request->input('category'),
+            'quantity' => $request->input('quantity'),
+            'image_link' => $request->input('image_link'),
+            'created_at' => now(),
+            'updated_at' => now(),
+            'status' => 'pending'
+        ]);
+    
+        // Insert contribution data directly into the contributions table
+        DB::table('contribution')->insert([
+            'reader_id' => Auth::user()->id,
+            'book_id' => $book, // Use the last inserted book's ID
+            'contributed_at' => now(),
+            'quantity' => $request->input('quantity'),
+        ]);
+
+
+        return redirect()->route('donate.form')->with('success','Book information submitted for approval.');
+    }
+//  CREATE OR REPLACE FUNCTION donate_book(title VARCHAR, author VARCHAR, category VARCHAR, quantity INT, image_link VARCHAR, reader_id INT)
+RETURNS VOID AS $$
+DECLARE
+    book_id INT;
+BEGIN
+    -- Insert the book and get its ID
+    INSERT INTO books (title, author, category, quantity, image_link, created_at, updated_at, status)
+    VALUES (title, author, category, quantity, image_link, NOW(), NOW(), 'pending')
+    RETURNING id INTO book_id;
+    
+    -- Insert into contribution table
+    INSERT INTO contribution (reader_id, book_id, contributed_at, quantity)
+    VALUES (reader_id, book_id, NOW(), quantity);
+END;
+$$ LANGUAGE plpgsql;
+
+
+For manager:
+public function pending(){
+        $books = Book::with(['contributions' => function($query) {
+            $query->with(['reader' => function($query) {
+                $query->select('id', 'name'); 
+            }])
+            ->select('book_id', 'reader_id', 'quantity', 'contributed_at'); 
+        }])
+        ->where('status', 'pending')
+        ->get();
+    
+        return view('manager.pending', ['books' => $books]);
+    }
+//  CREATE OR REPLACE FUNCTION get_pending_books()
+RETURNS TABLE(book_id INT, reader_id INT, quantity INT, contributed_at TIMESTAMP) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT b.id, c.reader_id, c.quantity, c.contributed_at
+    FROM books b
+    JOIN contributions c ON b.id = c.book_id
+    JOIN readers r ON c.reader_id = r.id
+    WHERE b.status = 'pending';
+END; $$
+LANGUAGE plpgsql;
+
+public function handleRequest(Request $request, $id, $action){
+        $book = Book::find($id);
+        if ($action == 'approve') {
+            $book->status = 'ok';
+            $book->save();
+            $contribution = DB::table('contribution')->where('book_id', $id)->first();
+            if ($contribution) {
+                $reader = DB::table('readers')->where('user_id', $contribution->reader_id)->first(); 
+                if ($reader) {
+                    $newQuantity = $reader->contributed_quantity + 1;
+                    $resetQuantity = 0;
+                    $newStatus = $reader->status; 
+                    if ($newQuantity > 3) {
+                        switch ($reader->status) {
+                            case 'red':
+                                $newStatus = 'green';
+                                break;
+                            case 'green':
+                                $newStatus = 'platinum';
+                                break;
+                            default:
+                                break;
+                        }
+                        $newQuantity = $resetQuantity;
+                    }
+                    DB::table('readers')->where('user_id', $reader->user_id)->update([
+                        'contributed_quantity' => $newQuantity,
+                        'status' => $newStatus,
+                    ]);
+                }
+            }
+        } else if ($action == 'reject') {
+            DB::table('contribution')->where('book_id', $id)->delete();
+            $book->delete();
+        }
+    
+        return redirect()->route('manager.books.pending');
+    }
+//  CREATE OR REPLACE FUNCTION handle_book_request(book_id INT, action TEXT)
+RETURNS VOID AS $$
+DECLARE
+    reader_record RECORD;
+BEGIN
+    IF action = 'approve' THEN
+        UPDATE books SET status = 'ok' WHERE id = book_id;
+        SELECT * INTO reader_record FROM contribution WHERE book_id = book_id LIMIT 1;
+        IF FOUND THEN
+            UPDATE readers SET contributed_quantity = contributed_quantity + 1 WHERE user_id = reader_record.reader_id;
+        END IF;
+    ELSIF action = 'reject' THEN
+        DELETE FROM contribution WHERE book_id = book_id;
+        DELETE FROM books WHERE id = book_id;
+    END IF;
+END; $$
+LANGUAGE plpgsql;
+
+    public function showBorrowRequests()
+{
+    $borrowRequests = Borrow::whereNull('borrowed_at')->whereNull('returned_at')->with('book', 'reader')->get();
+    return view('manager.borrow_requests', compact('borrowRequests'));
+}
+//  CREATE OR REPLACE FUNCTION show_borrow_requests()
+RETURNS TABLE(book_id INT, reader_id INT) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT b.book_id, b.reader_id
+    FROM borrow b
+    WHERE b.borrowed_at IS NULL AND b.returned_at IS NULL;
+END; $$
+LANGUAGE plpgsql;
+
+public function confirmBorrow(Request $request, $id)
+{
+    DB::transaction(function () use ($id) {
+        $borrow = Borrow::findOrFail($id);
+        $borrow->update([
+            'borrowed_at' => now(),
+            'returned_at' => now()->addMonths(6),
+        ]);
+
+        $borrow->book->decrement('quantity');
+        $borrow->reader->increment('borrowed_quantity');
+    });
+
+    return redirect()->route('manager.borrow_requests')->with('success', 'Borrow request confirmed.');
+}
+//  CREATE OR REPLACE FUNCTION confirm_borrow(borrow_id INT)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE borrow SET borrowed_at = NOW(), returned_at = NOW() + INTERVAL '6 months' WHERE id = borrow_id;
+    UPDATE books SET quantity = quantity - 1 WHERE id IN (SELECT book_id FROM borrow WHERE id = borrow_id);
+    UPDATE readers SET borrowed_quantity = borrowed_quantity + 1 WHERE user_id IN (SELECT reader_id FROM borrow WHERE id = borrow_id);
+END; $$
+LANGUAGE plpgsql;
+
+public function cancelBorrow($id)
+{
+    Borrow::findOrFail($id)->delete();
+    return redirect()->route('manager.borrow_requests')->with('success', 'Borrow request canceled.');
+}
+//  CREATE OR REPLACE FUNCTION cancel_borrow(borrow_id INT)
+RETURNS VOID AS $$
+BEGIN
+    DELETE FROM borrow WHERE id = borrow_id;
+END; $$
+LANGUAGE plpgsql;
+
+public function return(){
+    $returnRequests = Borrow::whereNotNull('borrowed_at')->whereNull('returned_at')->with('book', 'reader')->get();
+    return view('manager.return_requests', compact('returnRequests'));
+}
+public function confirmReturn($id) {
+    $borrow = DB::table('borrow')->where('id', $id)->first();
+    if ($borrow) {
+        DB::transaction(function () use ($borrow) {
+            DB::table('books')->where('id', $borrow->book_id)->increment('quantity');
+            DB::table('readers')->where('user_id', $borrow->reader_id)->decrement('borrowed_quantity');
+            DB::table('borrow')->where('id', $borrow->id)->delete();
+        });
+        return redirect()->route('manager.return_requests')->with('success', 'Return confirmed.');
+    }
+    return redirect()->route('manager.return_requests')->with('err', 'Return cancel.');
+}
+//  CREATE OR REPLACE FUNCTION confirm_return(borrow_id INT)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE books SET quantity = quantity + 1 WHERE id IN (SELECT book_id FROM borrow WHERE id = borrow_id);
+    UPDATE readers SET borrowed_quantity = borrowed_quantity - 1 WHERE user_id IN (SELECT reader_id FROM borrow WHERE id = borrow_id);
+    DELETE FROM borrow WHERE id = borrow_id;
+END; $$
+LANGUAGE plpgsql;
+
+public function showLost(){
+    $lostBooks = Borrow::whereNull('borrowed_at')->with('book', 'reader')->get();
+    return view('manager.lost', compact('lostBooks'));
+}
+public function approveLost(Request $request, $borrowId)
+{
+    $borrow = DB::table('borrow')->where('id', $borrowId)->first();
+    if (!$borrow) {
+        return redirect()->route('showLost')->with('error', 'Borrow record not found.');
+    }
+    $readerId = $borrow->reader_id;
+    DB::table('readers')->where('user_id', $readerId)->increment('lost_book');
+    $updatedReader = DB::table('readers')->where('user_id', $readerId)->first();
+    $newStatus = $this->determineNewStatus($updatedReader->status, $updatedReader->lost_book);
+    $updateArray = ['status' => $newStatus];
+    if ($newStatus !== $updatedReader->status) {
+        $updateArray['contributed_quantity'] = 0;
+        $updateArray['lost_book'] = 0;
+    }
+    DB::table('readers')->where('user_id', $readerId)->update($updateArray);
+    DB::table('borrow')->where('id', $borrowId)->delete();
+    return redirect()->route('showLost')->with('success', 'Lost book processed successfully.');
+}
+private function determineNewStatus($currentStatus, $lostBookCount)
+{
+    if ($lostBookCount > 2) {
+        switch ($currentStatus) {
+            case 'platinum':
+                return 'green';
+            case 'green':
+                return 'red';
+            default:
+                return $currentStatus;
+        }
+    }
+    return $currentStatus;
+}
+//  CREATE OR REPLACE FUNCTION handle_lost_book(borrow_id INT)
+RETURNS VOID AS $$
+DECLARE
+    reader_id INT;
+    lost_book_count INT;
+    new_status TEXT;
+BEGIN
+    SELECT reader_id INTO reader_id FROM borrow WHERE id = borrow_id;
+    UPDATE readers SET lost_book = lost_book + 1 WHERE user_id = reader_id;
+    UPDATE readers SET borrowed_quantity = borrowed_quantity - 1 WHERE user_id = reader_id;
+    SELECT lost_book INTO lost_book_count FROM readers WHERE user_id = reader_id;
+    -- Assuming determineNewStatus is another function that returns the new status based on current status and lost book count
+    SELECT determineNewStatus(status, lost_book_count) INTO new_status FROM readers WHERE user_id = reader_id;
+    UPDATE readers SET status = new_status WHERE user_id = reader_id;
+    DELETE FROM borrow WHERE id = borrow_id;
+END; $$
+LANGUAGE plpgsql;
+
+
+Rating: 
+public function add(Request $request, $bookId){
+        $request->validate([
+            'product_rating' => 'required|integer|min:1|max:5',
+        ]);
+        $userId = Auth::id(); 
+        $starsRated = $request->input('product_rating');
+    
+        $bookRatingInfo = DB::table('rating')
+                            ->where('book_id', $bookId)
+                            ->selectRaw('AVG(rating) as average_rating, COUNT(*) as ratings_count')
+                            ->first();
+    
+        $currentAverageRating = $bookRatingInfo->average_rating ?? 0;
+        $ratingsCount = $bookRatingInfo->ratings_count;
+        $newAverageRating = $currentAverageRating == 0 ? $starsRated : (($currentAverageRating * $ratingsCount) + $starsRated) / ($ratingsCount + 1);
+    
+        $ratingExists = DB::table('rating')
+                          ->where('book_id', $bookId)
+                          ->where('reader_id', $userId)
+                          ->exists();
+    
+        if ($ratingExists) {
+            DB::table('rating')
+              ->where('book_id', $bookId)
+              ->where('reader_id', $userId)
+              ->update(['rating' => $starsRated]);
+        } else {
+            DB::table('rating')->insert([
+                'book_id' => $bookId,
+                'reader_id' => $userId,
+                'rating' => $starsRated,
+            ]);
+        }
+        DB::table('books')->where('id', $bookId)->update(['rating' => $newAverageRating]);
+    
+        return redirect()->back()->with('message', 'Thank you for rating the book!');
+    }
+//  CREATE OR REPLACE FUNCTION add_rating(book_id INT, user_id INT, stars_rated INT)
+RETURNS VOID AS $$
+DECLARE
+    current_average_rating NUMERIC;
+    ratings_count INT;
+    new_average_rating NUMERIC;
+    rating_exists BOOLEAN;
+BEGIN
+    -- Validate stars_rated
+    IF stars_rated < 1 OR stars_rated > 5 THEN
+        RAISE EXCEPTION 'Rating must be between 1 and 5.';
+    END IF;
+
+    -- Calculate current average rating and ratings count
+    SELECT AVG(rating) INTO current_average_rating FROM rating WHERE book_id = book_id;
+    SELECT COUNT(*) INTO ratings_count FROM rating WHERE book_id = book_id;
+
+    -- If no ratings, set current average to 0
+    IF current_average_rating IS NULL THEN
+        current_average_rating := 0;
+    END IF;
+
+    -- Calculate new average rating
+    IF current_average_rating = 0 THEN
+        new_average_rating := stars_rated;
+    ELSE
+        new_average_rating := ((current_average_rating * ratings_count) + stars_rated) / (ratings_count + 1);
+    END IF;
+
+    -- Check if rating already exists
+    SELECT EXISTS(SELECT 1 FROM rating WHERE book_id = book_id AND reader_id = user_id) INTO rating_exists;
+
+    -- Update or insert rating
+    IF rating_exists THEN
+        UPDATE rating SET rating = stars_rated WHERE book_id = book_id AND reader_id = user_id;
+    ELSE
+        INSERT INTO rating(book_id, reader_id, rating) VALUES (book_id, user_id, stars_rated);
+    END IF;
+
+    -- Update book's average rating
+    UPDATE books SET rating = new_average_rating WHERE id = book_id;
+END;
+$$ LANGUAGE plpgsql;
