@@ -112,7 +112,6 @@
                         <li><a href="{{url('/')}}" >Home</a></li>
                         <li><a href="{{url('explore')}}">Explore</a></li>
                         <li><a href="{{ route('showBorrow') }} " class="active">Book Borrowing</a></li>
-                        <li><a href="author.html">Author</a></li>
                         <li><a href="{{url('donate')}}">Donate</a></li>
                         @if (Route::has('login'))
                             
