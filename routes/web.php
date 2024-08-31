@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/explore',[HomeController::class,'explore'])->name('explore');
 Route::get('/search',[HomeController::class,'search'])->name('search');
 Route::get('/filter', [HomeController::class,'filter']);
-Route::get('/borrowing',[HomeController::class,'showBorrow'])->name('showBorrow');
+Route::get('/borrowing',[HomeController::class,'showBorrow'])->name('showBorrow')->middleware('auth');
 Route::post('/return-request/{id}', [HomeController::class,'returnRequest'])->name('book.return.request');
 Route::post('/return-requests/{id}', [ManagerController::class,'confirmReturn'])->name('manager.confirm.return');
 Route::get('/return-requests', [ManagerController::class, 'return'])->name('manager.return_requests');
