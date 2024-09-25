@@ -49,7 +49,7 @@ class HomeController extends Controller
     }
     public function details($id){
         $books = Book::find($id);
-        return view('books.details',compact('books'));
+        return view('books.detailsbook',compact('books'));
     }
     public function showBorrow(){
         $readerId = auth()->user()->reader->user_id;
